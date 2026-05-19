@@ -51,7 +51,7 @@ export default function Journey() {
 
   return (
     <section id="journey" className="section">
-      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
+      <div style={{ maxWidth: 1100, margin: 'auto', padding: '0 24px' }}>
         <div style={{ textAlign: 'center', marginBottom: '3.5rem' }}>
           <div className="section-label" style={{ justifyContent: 'center' }}>
             Experience
@@ -73,7 +73,7 @@ export default function Journey() {
         >
           {/* Timeline Accordion */}
           <div style={{ position: 'relative', paddingLeft: 48 }}>
-            <div className="timeline-line" />
+            <div className="timeline-line " />
             <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
               {JOURNEY.map((item, i) => (
                 <div key={i} style={{ position: 'relative' }}>
@@ -94,9 +94,9 @@ export default function Journey() {
                     }}
                   >
                     <div
-                      className="glass"
+                      className="glass "
                       style={{
-                        padding: '16px 20px',
+                        padding: '16px 34px',
                         borderColor:
                           open === i ? 'rgba(0,212,255,0.3)' : 'var(--border)',
                         transition: 'all 0.3s ease',
@@ -107,7 +107,7 @@ export default function Journey() {
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'space-between',
-                          gap: 12,
+                          gap: 14,
                         }}
                       >
                         <div>
