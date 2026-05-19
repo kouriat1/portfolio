@@ -94,6 +94,8 @@ export default function Contact() {
       }, BOOT_LINES[bootIdx].delay)
       return () => clearTimeout(t)
     } else {
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBooted(true)
     }
   }, [bootIdx])

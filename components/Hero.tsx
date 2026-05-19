@@ -62,6 +62,7 @@ export default function Hero() {
         const t = setTimeout(() => setDisplayed(displayed.slice(0, -1)), 35)
         return () => clearTimeout(t)
       } else {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setRoleIdx((i) => (i + 1) % ROLES.length)
         setTyping(true)
       }
