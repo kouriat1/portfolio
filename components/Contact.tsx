@@ -34,7 +34,7 @@ const COMMANDS: Record<string, () => HistoryEntry[]> = {
   ],
   experience: () => [
     { output: '━━━ Work Experience ━━━', type: 'info' },
-    { output: '  2024–now  DevOps Engineer @ Cloud-Native Corp' },
+    { output: '  2025–now  DevOps Engineer @ Cloud-Native Corp' },
     { output: '  2022–2024 Infra Engineer @ FinTech Startup' },
     { output: '  2021–2022 SRE @ E-commerce Leader' },
     { output: '  2019–2021 Linux Admin @ Managed Services' },
@@ -51,10 +51,9 @@ const COMMANDS: Record<string, () => HistoryEntry[]> = {
   ],
   contact: () => [
     { output: '━━━ Contact ━━━', type: 'info' },
-    { output: '  📧 Email    : hello@example.com' },
-    { output: '  💼 LinkedIn : linkedin.com/in/example' },
-    { output: '  🐙 GitHub   : github.com/example' },
-    { output: '  🕊️  Twitter  : @example' },
+    { output: '  📧 Email    : medkouriat99@gmail.com' },
+    { output: '  💼 LinkedIn : linkedin.com/in/mohamed-kouriat' },
+    { output: '  🐙 GitHub   : github.com/kouriat1' },
     { output: '' },
     { output: '  I reply within 24h — let\'s build something!', type: 'success' },
   ],
@@ -95,6 +94,8 @@ export default function Contact() {
       }, BOOT_LINES[bootIdx].delay)
       return () => clearTimeout(t)
     } else {
+
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setBooted(true)
     }
   }, [bootIdx])
