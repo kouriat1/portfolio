@@ -6,9 +6,7 @@ on:
       - develop
 
 env:
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: ${{ secrets.GCP_REGION }}
-  REPOSITORY: portfolio
   SERVICE: portfolio-staging
 
 jobs:
@@ -18,42 +16,56 @@ jobs:
 
     permissions:
       contents: read
-      id-token: write  # Obligatoire pour Workload Identity Federation
+      id-token: write
 
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
 
-      - name: Authenticate to Google Cloud
+      - name: 🔐 Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
 
-      - name: Configure Docker for Artifact Registry
+      - name: ☁️ Set up gcloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: 🐳 Configure Docker for Artifact Registry
         run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
-        
-      - name: Build Docker image
+
+      - name: 🔨 Build Docker image
+        id: build-image
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         run: |
-          IMAGE=$(echo "europe-west1-docker.pkg.dev/${GCP_PROJECT_ID}/portfolio/portfolio-staging" | tr '[:upper:]' '[:lower:]')
+          # Construction du chemin exact correspondant à ton Artifact Registry
+          RAW_IMAGE="europe-west1-docker.pkg.dev/${GCP_PROJECT_ID}/portfolio/portfolio-staging"
+          IMAGE=$(echo "$RAW_IMAGE" | tr '[:upper:]' '[:lower:]')
+          
+          echo "🏗️ Building image: ${IMAGE}:${{ github.sha }}"
           docker build -t ${IMAGE}:${{ github.sha }} .
           docker tag ${IMAGE}:${{ github.sha }} ${IMAGE}:latest
-          echo "IMAGE=${IMAGE}" >> $GITHUB_ENV
+          
+          # Transmission propre du chemin aux étapes suivantes
+          echo "image_path=${IMAGE}" >> $GITHUB_OUTPUT
 
-      - name: Push Docker image
+      - name: 📤 Push Docker image
         run: |
-          docker push ${{ env.IMAGE }}:${{ github.sha }}
-          docker push ${{ env.IMAGE }}:latest
+          echo "📦 Pushing image to Artifact Registry..."
+          docker push ${{ steps.build-image.outputs.image_path }}:${{ github.sha }}
+          docker push ${{ steps.build-image.outputs.image_path }}:latest
+          echo "✅ Image pushed successfully"
 
-      - name: Deploy to Cloud Run (Staging)
+      - name: 🚀 Deploy to Cloud Run (Staging)
         uses: google-github-actions/deploy-cloudrun@v2
         with:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
-          image: ${{ env.IMAGE }}:${{ github.sha }}
+          image: ${{ steps.build-image.outputs.image_path }}:${{ github.sha }}
           flags: --allow-unauthenticated
 
-      - name: Show Staging URL
-        run: echo "✅ Staging deployed → $(gcloud run services describe ${{ env.SERVICE }} --region=${{ env.REGION }} --format='value(status.url)')"
+      - name: 🌍 Show Staging URL
+        run: |
+          URL=$(gcloud run services describe ${{ env.SERVICE }} --region=${{ env.REGION }} --format='value(status.url)')
+          echo "✅ Staging deployed → ${URL}"
