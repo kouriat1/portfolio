@@ -10,7 +10,6 @@ env:
   REGION: ${{ secrets.GCP_REGION }}
   REPOSITORY: portfolio
   SERVICE: portfolio-staging
-  IMAGE: europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio/portfolio-staging
 
 jobs:
   deploy:
@@ -36,8 +35,10 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ env.IMAGE }}:${{ github.sha }} .
-          docker tag ${{ env.IMAGE }}:${{ github.sha }} ${{ env.IMAGE }}:latest
+          IMAGE=$(echo "europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio/portfolio-staging" | tr '[:upper:]' '[:lower:]')
+          docker build -t ${IMAGE}:${{ github.sha }} .
+          docker tag ${IMAGE}:${{ github.sha }} ${IMAGE}:latest
+          echo "IMAGE=${IMAGE}" >> $GITHUB_ENV
 
       - name: Push Docker image
         run: |
