@@ -3,7 +3,7 @@ name: CD Staging
 on:
   push:
     branches:
-      - main
+      - develop
 
 env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
