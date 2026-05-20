@@ -1,0 +1,57 @@
+name: CD Staging
+
+on:
+  push:
+    branches:
+      - develop
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: ${{ secrets.GCP_REGION }}
+  REPOSITORY: portfolio
+  SERVICE: portfolio-staging
+
+jobs:
+  deploy:
+    name: Build & Deploy to Staging
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write  # Obligatoire pour Workload Identity Federation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker europe-west1-docker.pkg.dev --quiet
+
+      - name: Build Docker image
+        run: |
+          IMAGE=$(echo "europe-west1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/portfolio/portfolio-staging" | tr '[:upper:]' '[:lower:]')
+          docker build -t ${IMAGE}:${{ github.sha }} .
+          docker tag ${IMAGE}:${{ github.sha }} ${IMAGE}:latest
+          echo "IMAGE=${IMAGE}" >> $GITHUB_ENV
+
+      - name: Push Docker image
+        run: |
+          docker push ${{ env.IMAGE }}:${{ github.sha }}
+          docker push ${{ env.IMAGE }}:latest
+
+      - name: Deploy to Cloud Run (Staging)
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE }}:${{ github.sha }}
+          flags: --allow-unauthenticated
+
+      - name: Show Staging URL
+        run: echo "✅ Staging deployed → $(gcloud run services describe ${{ env.SERVICE }} --region=${{ env.REGION }} --format='value(status.url)')"
