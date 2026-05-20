@@ -11,23 +11,23 @@ type Step = {
 }
 
 const CORRECT_ORDER: Step[] = [
-  { id: 'code',    label: 'Code Commit',      icon: '💻', desc: 'Developer pushes code to main branch', color: '#00d4ff' },
-  { id: 'lint',    label: 'Lint & Format',    icon: '🔍', desc: 'ESLint, Prettier, static analysis', color: '#8b5cf6' },
-  { id: 'test',    label: 'Unit Tests',       icon: '🧪', desc: 'Jest, pytest — fast feedback loop', color: '#10d979' },
-  { id: 'build',   label: 'Build & Package',  icon: '📦', desc: 'Docker image build + tag', color: '#f59e0b' },
-  { id: 'scan',    label: 'Security Scan',    icon: '🛡️', desc: 'Trivy, Snyk vulnerability scanning', color: '#f43f5e' },
-  { id: 'push',    label: 'Push to Registry', icon: '📤', desc: 'Artifact Registry / ECR push', color: '#00d4ff' },
-  { id: 'deploy',  label: 'Deploy to Staging',icon: '🚀', desc: 'ArgoCD sync → staging environment', color: '#8b5cf6' },
-  { id: 'e2e',     label: 'E2E Tests',        icon: '🌐', desc: 'Playwright smoke tests in staging', color: '#10d979' },
-  { id: 'approve', label: 'Manual Approve',   icon: '✅', desc: 'Human gate before production', color: '#f59e0b' },
-  { id: 'prod',    label: 'Deploy to Prod',   icon: '🏆', desc: 'Blue/Green deploy on GKE', color: '#f43f5e' },
+  { id: 'code', label: 'Code Commit', icon: '💻', desc: 'Developer pushes code to main branch', color: '#00d4ff' },
+  { id: 'lint', label: 'Lint & Format', icon: '🔍', desc: 'ESLint, Prettier, static analysis', color: '#8b5cf6' },
+  { id: 'test', label: 'Unit Tests', icon: '🧪', desc: 'Jest, pytest — fast feedback loop', color: '#10d979' },
+  { id: 'build', label: 'Build & Package', icon: '📦', desc: 'Docker image build + tag', color: '#f59e0b' },
+  { id: 'scan', label: 'Security Scan', icon: '🛡️', desc: 'Trivy, Snyk vulnerability scanning', color: '#f43f5e' },
+  { id: 'push', label: 'Push to Registry', icon: '📤', desc: 'Artifact Registry / ECR push', color: '#00d4ff' },
+  { id: 'deploy', label: 'Deploy to Staging', icon: '🚀', desc: 'ArgoCD sync → staging environment', color: '#8b5cf6' },
+  { id: 'e2e', label: 'E2E Tests', icon: '🌐', desc: 'Playwright smoke tests in staging', color: '#10d979' },
+  { id: 'approve', label: 'Manual Approve', icon: '✅', desc: 'Human gate before production', color: '#f59e0b' },
+  { id: 'prod', label: 'Deploy to Prod', icon: '🏆', desc: 'Blue/Green deploy on GKE', color: '#f43f5e' },
 ]
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr]
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
-    ;[a[i], a[j]] = [a[j], a[i]]
+      ;[a[i], a[j]] = [a[j], a[i]]
   }
   return a
 }
@@ -41,6 +41,8 @@ export default function Pipeline() {
 
   // Shuffle only on client after hydration
   useEffect(() => {
+
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setItems(shuffle(CORRECT_ORDER))
   }, [])
 
@@ -211,8 +213,8 @@ export default function Pipeline() {
               {score === 10
                 ? 'Perfect pipeline! You\'re a DevOps pro.'
                 : score >= 7
-                ? 'Great work — a few steps out of place.'
-                : 'Keep studying those pipeline stages!'}
+                  ? 'Great work — a few steps out of place.'
+                  : 'Keep studying those pipeline stages!'}
             </div>
           </div>
         )}
